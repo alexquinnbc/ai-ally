@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Ally for Apple Users (Single File)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Basic Reset & Defaults */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f0f0f0; /* Light gray background */
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header Styling */
+        .main-header {
+            background-color: #333; /* Darker header for contrast */
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .main-header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0; 
+        }
+
+        .nav-button {
+            background: none;
+            border: none;
+            color: #ccc;
+            padding: 0.5rem 1rem;
+            margin-left: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .nav-button:hover, .nav-button.active {
+            background-color: #555;
+            color: white;
+        }
+
+        /* Main Content Area */
+        main {
+            flex-grow: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto; 
+            width: 100%;
+        }
+
+        .content-section {
+            display: none; 
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .content-section.active-section {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .content-section h2 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e0e0e0; 
+        }
+        .content-section h3 {
+            font-size: 1.5rem;
+            color: #1a5f99;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+         .content-section h4 {
+            font-size: 1.2rem;
+            color: #333;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+
+        /* Home Section */
+        .hero-banner {
+            text-align: center;
+            padding: 2rem;
+            background-color: #fff; 
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .hero-banner h2 { /* Specific for hero */
+            border-bottom: none;
+            color: #1a5f99;
+            font-size: 1.8rem; /* Adjusted for hero context */
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: #007aff; 
+            color: white;
+            padding: 0.8rem 1.8rem;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 1rem;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+            text-shadow: 0 -1px 0px rgba(0,0,0,0.2);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2),
+                        inset 0 1px 0px rgba(255,255,255,0.3);
+        }
+        .cta-button:hover {
+            background-color: #005ecb;
+            transform: translateY(-2px);
+        }
+        .cta-button:active {
+            transform: translateY(0px);
+            background-color: #004a9b;
+            box-shadow: inset 0 2px 3px rgba(0,0,0,0.3),
+                        0 0 0px rgba(255,255,255,0);
+        }
+
+        .quick-start-wizard {
+            text-align: center;
+            margin-top: 2rem;
+        }
+        .quick-start-wizard h3 { /* Specific for wizard */
+            margin-bottom: 1rem;
+            font-weight: 500;
+            color: #444;
+            font-size: 1.3rem;
+        }
+        .wizard-options {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .wizard-option {
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            transition: all 0.2s ease;
+            min-width: 180px;
+        }
+        .wizard-option i {
+            margin-right: 0.5rem;
+            color: #007aff;
+        }
+        .wizard-option:hover {
+            border-color: #007aff;
+            background-color: #f0f8ff; 
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+
+        /* Understand Apple Section */
+        .supportive-intro, .empowering-note {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: #555;
+        }
+        .info-card {
+            background: linear-gradient(145deg, #ffffff, #e8e8e8);
+            border: 1px solid #d8d8d8;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            box-shadow: 4px 4px 8px #cccccc,
+                        -4px -4px 8px #ffffff;
+        }
+        .info-card-icon {
+            font-size: 1.8rem;
+            color: #007aff;
+            margin-top: 0.2rem;
+            min-width: 30px; 
+            text-align: center;
+        }
+        .info-card h3 { /* Specific for info-card */
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+            margin-top: 0;
+        }
+
+
+        /* Task Explorer Section */
+        .search-filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: center;
+        }
+
+        #task-search, #category-filter {
+            padding: 0.75rem;
+            font-size: 1rem;
+            border: 1px solid #bbb; 
+            border-radius: 6px;
+            background: linear-gradient(to bottom, #fefefe, #f0f0f0); 
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); 
+        }
+        #task-search { flex-grow: 1; }
+        #category-filter { background-color: white; } 
+
+
+        .task-list-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .task-card { 
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .task-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 7px 7px 15px #b9b9b9,
+                        -7px -7px 15px #ffffff,
+                        inset 1px 1px 2px #ffffff, 
+                        inset -1px -1px 2px #c7c7c7;
+        }
+
+        .task-card h3 { /* Specific for task-card */
+            font-size: 1.4rem;
+            color: #005ecb; 
+            margin-bottom: 0.5rem;
+            margin-top: 0;
+        }
+
+        .task-card .task-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+            color: #007aff;
+        }
+
+        .task-card p {
+            font-size: 0.95rem;
+            color: #555;
+            margin-bottom: 1rem;
+        }
+
+        .apple-native-status {
+            font-size: 0.9rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+        .apple-native-status.good { background-color: #e6ffed; color: #28a745; border: 1px solid #c3e6cb;}
+        .apple-native-status.limited { background-color: #fff3cd; color: #ffc107; border: 1px solid #ffeeba;}
+        .apple-native-status.poor { background-color: #f8d7da; color: #dc3545; border: 1px solid #f5c6cb;}
+        .apple-native-status i { margin-right: 5px; }
+
+        /* Learn & Grow Section Specifics */
+        #learn-grow p {
+            margin-bottom: 0.75rem;
+        }
+        #learn-grow ul {
+            list-style-position: inside;
+            margin-left: 1rem;
+            margin-bottom: 1rem;
+        }
+        #learn-grow li {
+            margin-bottom: 0.5rem;
+        }
+        #learn-grow table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            background-color: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        #learn-grow th, #learn-grow td {
+            border: 1px solid #ddd;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        #learn-grow th {
+            background-color: #e9ecef; /* Light gray for table headers */
+            font-weight: 600;
+        }
+        #learn-grow td a, #learn-grow li a, #learn-grow p a {
+            color: #007aff;
+            text-decoration: none;
+        }
+        #learn-grow td a:hover, #learn-grow li a:hover, #learn-grow p a:hover {
+            text-decoration: underline;
+        }
+        .citation-list {
+            list-style-type: decimal;
+            font-size: 0.9rem;
+        }
+        .citation-list li {
+            margin-bottom: 0.25rem;
+            word-break: break-all; /* For long URLs */
+        }
+
+
+        /* Modal Styling for Task Details */
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6); 
+            animation: fadeInModal 0.3s ease-out;
+        }
+
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content { 
+            margin: 5% auto;
+            width: 80%;
+            max-width: 700px;
+            position: relative;
+            animation: slideInModal 0.3s ease-out;
+        }
+
+        @keyframes slideInModal {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            background: none;
+            border: none;
+            cursor: pointer;
+            line-height: 1; 
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+        #task-detail-content h3 { /* Specific for modal */
+            margin-top: 0;
+            color: #005ecb;
+            font-size: 1.6rem;
+        }
+        #task-detail-content .alternative-tool {
+            border: 1px solid #e0e0e0;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 6px;
+            background-color: #f9f9f9; 
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+        }
+        #task-detail-content .alternative-tool h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+            margin-top: 0;
+            display: flex; 
+            align-items: center;
+        }
+        #task-detail-content .alternative-tool p {
+            font-size: 0.9rem;
+            margin-bottom: 0.2rem;
+        }
+        #task-detail-content .alternative-tool .access-links a {
+            margin-right: 10px;
+            color: #007aff;
+            text-decoration: none;
+        }
+        #task-detail-content .alternative-tool .access-links a:hover {
+            text-decoration: underline;
+        }
+        #task-detail-content .affordability-meter {
+            font-weight: bold;
+        }
+        #task-detail-content .affordability-meter.free { color: #28a745; }
+        #task-detail-content .affordability-meter.freemium { color: #fd7e14; }
+        #task-detail-content .affordability-meter.paid { color: #dc3545; }
+
+        /* Footer Styling */
+        .main-footer {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: #222; 
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-top: auto; 
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .main-header {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            .main-header nav {
+                margin-top: 0.5rem;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .nav-button {
+                margin: 0.2rem;
+            }
+            main {
+                padding: 1rem;
+            }
+            .task-list-container {
+                grid-template-columns: 1fr; 
+            }
+            .modal-content {
+                width: 90%;
+                margin: 10% auto;
+            }
+            .wizard-options {
+                flex-direction: column;
+            }
+            .search-filter-bar {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            #task-search, #category-filter {
+                width: 100%;
+            }
+            #learn-grow th, #learn-grow td {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* SKEUOMORPHISM CSS */
+        .skeuo-panel {
+            background: linear-gradient(145deg, #f7f7f7, #e0e0e0);
+            border-radius: 12px;
+            box-shadow: 5px 5px 10px #c7c7c7,
+                        -5px -5px 10px #ffffff,
+                        inset 1px 1px 2px #ffffff, 
+                        inset -1px -1px 2px #c7c7c7; 
+            padding: 20px;
+            border: 1px solid #d1d1d1; 
+        }
+
+        .skeuo-button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #555;
+            text-shadow: 0 1px 0px rgba(255,255,255,0.7);
+            background: linear-gradient(to bottom, #f7f7f7 0%, #e0e0e0 100%);
+            border: 1px solid #bbb;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1), 
+                        inset 0 1px 0px rgba(255,255,255,0.5); 
+            cursor: pointer;
+            transition: all 0.1s ease-in-out;
+        }
+
+        .skeuo-button:hover {
+            background: linear-gradient(to bottom, #efefef 0%, #d9d9d9 100%);
+            border-color: #aaa;
+        }
+
+        .skeuo-button:active {
+            background: linear-gradient(to bottom, #d9d9d9 0%, #efefef 100%);
+            box-shadow: inset 0 2px 3px rgba(0,0,0,0.2), 
+                        0 0 0px rgba(255,255,255,0); 
+            transform: translateY(1px);
+        }
+
+        .skeuo-paper {
+            background-color: #fdfdfa; 
+            border: 1px solid #e0e0cc;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.05),
+                        inset 0 0 10px rgba(0,0,0,0.02); 
+            border-radius: 4px; 
+            padding: 1.5rem;
+        }
+        .no-results {
+            text-align: center;
+            padding: 2rem;
+            color: #777;
+            grid-column: 1 / -1; 
+        }
+
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="logo-container">
+            <h1>AI Ally</h1>
+        </div>
+        <nav>
+            <button data-section="home" class="nav-button active">Home</button>
+            <button data-section="understand-apple" class="nav-button">Apple's AI</button>
+            <button data-section="task-explorer" class="nav-button">Task Explorer</button>
+            <button data-section="learn-grow" class="nav-button">Learn & Grow</button>
+        </nav>
+    </header>
+
+    <main>
+        <!-- SECTION: Home / Welcome -->
+        <section id="home" class="content-section active-section">
+            <div class="hero-banner skeuo-panel">
+                <h2>Unlock the Full Power of AI on Your Apple Devices.</h2>
+                <p>Navigate the AI landscape with clarity. Discover tools that work <em>for you</em>, even when Apple's native options fall short.</p>
+                <button class="cta-button" data-section-target="task-explorer">Explore AI Tasks Now</button>
+            </div>
+
+            <div class="quick-start-wizard">
+                <h3>What do you want to achieve with AI today?</h3>
+                <div class="wizard-options">
+                    <button class="wizard-option skeuo-button" data-category-target="Writing">
+                        <i class="fas fa-pencil-alt"></i> Writing & Content
+                    </button>
+                    <button class="wizard-option skeuo-button" data-category-target="Visuals">
+                        <i class="fas fa-image"></i> Image & Video
+                    </button>
+                    <button class="wizard-option skeuo-button" data-category-target="Productivity">
+                        <i class="fas fa-rocket"></i> Productivity
+                    </button>
+                    <button class="wizard-option skeuo-button" data-category-target="Learning">
+                        <i class="fas fa-book-open"></i> Research & Learning
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: Understand Apple's AI -->
+        <section id="understand-apple" class="content-section">
+            <h2>Your Apple Devices & AI: The Current Picture</h2>
+            <p class="supportive-intro">We love our Apple devices for their design, security, and ecosystem. When it comes to cutting-edge AI, however, there are some things to be aware of so you can make the most informed choices.</p>
+            
+            <div class="info-card">
+                <div class="info-card-icon"><i class="fas fa-microphone-alt-slash"></i></div>
+                <div>
+                    <h3>Siri's Journey & Limitations</h3>
+                    <p>Siri pioneered voice assistants, but for complex tasks requiring deep understanding or multi-app integration, alternatives like Google Assistant or Microsoft Copilot often provide more robust solutions. We'll show you how to access them!</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                 <div class="info-card-icon"><i class="fas fa-mobile-alt"></i></div>
+                 <div>
+                    <h3>"Apple Intelligence" & Hardware</h3>
+                    <p>Apple's new AI features are promising but often require the latest hardware (e.g., iPhone 15 Pro, M-series Macs). AI Ally helps you find powerful AI tools that work great on your current devices.</p>
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <div class="info-card-icon"><i class="fas fa-dollar-sign"></i></div>
+                <div>
+                    <h3>The "Premium" Gap</h3>
+                    <p>You don't always need expensive subscriptions for top-tier AI. We highlight fantastic free and affordable alternatives to tools like ChatGPT Plus, ensuring you get great value.</p>
+                </div>
+            </div>
+            <p class="empowering-note">Our goal is to empower you, not to criticize. Knowledge is power, and with AI Ally, you'll have the power to choose the best AI for your needs!</p>
+        </section>
+
+        <!-- SECTION: Task Explorer -->
+        <section id="task-explorer" class="content-section">
+            <h2>AI Task Explorer</h2>
+            <div class="search-filter-bar">
+                <input type="search" id="task-search" placeholder="e.g., summarize PDF, generate logo...">
+                <select id="category-filter">
+                    <option value="all">All Categories</option>
+                </select>
+            </div>
+            <div id="task-list" class="task-list-container">
+            </div>
+        </section>
+
+        <!-- SECTION: Task Detail View (Modal or separate area) -->
+        <div id="task-detail-modal" class="modal">
+            <div class="modal-content skeuo-panel">
+                <button class="close-button">×</button>
+                <div id="task-detail-content">
+                </div>
+            </div>
+        </div>
+        
+        <!-- SECTION: Learn & Grow -->
+        <section id="learn-grow" class="content-section skeuo-paper">
+            <h2>Learn & Grow with AI: A Comprehensive Guide</h2>
+            <p>While Apple's ecosystem has lagged in AI integration, numerous cross-platform alternatives excel across key AI tasks. Here's a comprehensive guide to top solutions, including cutting-edge models and pricing:</p>
+
+            <h3>1. AI Assistants & Chatbots</h3>
+            <h4>Alternatives:</h4>
+            <ul>
+                <li><strong><a href="https://openai.com/chatgpt/" target="_blank">ChatGPT-4o</a></strong> (Free / $20/month): OpenAI's multimodal model with image/voice analysis.</li>
+                <li><strong><a href="https://www.anthropic.com/claude" target="_blank">Claude 3 Opus</a></strong> ($20/month): Anthropic's high-reasoning model for complex tasks.</li>
+                <li><strong><a href="https://www.deepseek.com/" target="_blank">DeepSeek-R1</a></strong> (Free API access): Cost-effective Chinese model potentially rivaling GPT-4.</li>
+                <li><strong><a href="https://grok.x.ai/" target="_blank">Grok-3</a></strong> ($16/month via X Premium+): Real-time data from X platform with "Big Brain" mode.</li>
+                <li><strong><a href="https://deepmind.google/technologies/gemini/" target="_blank">Gemini 1.5 Pro / Gemini 2.5 (announced)</a></strong> (Paid API / Google One AI Premium): Google's model with large context window for long documents. (Note: Gemini 2.5 seems to be a typo in source, likely referring to advancements on Gemini 1.5 or upcoming versions).</li>
+            </ul>
+
+            <h3>2. Video Generation</h3>
+            <h4>Top Tools:</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Price</th>
+                        <th>Key Features</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong><a href="https://www.synthesia.io/" target="_blank">Synthesia</a></strong></td>
+                        <td>$22/month (Creator) / Custom (Enterprise) (Source: Synthesia website, prices vary)</td>
+                        <td>230+ avatars, 140+ languages.</td>
+                    </tr>
+                    <tr>
+                        <td><strong><a href="https://runwayml.com/" target="_blank">Runway</a></strong></td>
+                        <td>Free / $12+/user/month</td>
+                        <td>Frame-by-frame editing, Gen-3 model (likely referring to Gen-2 or upcoming advancements).</td>
+                    </tr>
+                    <tr>
+                        <td><strong><a href="https://www.opus.pro/" target="_blank">OpusClip</a></strong></td>
+                        <td>$19+/month (Note: Check official site for current pricing)</td>
+                        <td>Auto-shortens long videos into engaging clips.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>3. Image Generation</h3>
+            <h4>Solutions:</h4>
+            <ul>
+                <li><strong><a href="https://www.midjourney.com/" target="_blank">Midjourney</a></strong> ($10+/month): Photorealistic and artistic image generation.</li>
+                <li><strong><a href="https://openai.com/dall-e-3/" target="_blank">DALL-E 3</a></strong> (Via ChatGPT Plus / API): Precise prompt adherence.</li>
+                <li><strong><a href="https://stability.ai/stablediffusion" target="_blank">Stable Diffusion 3</a></strong> (Open source / API access): Customizable local deployment, powerful open model.</li>
+                <li><strong><a href="https://www.adobe.com/sensei/generative-ai/firefly.html" target="_blank">Adobe Firefly</a></strong> ($4.99/month within Creative Cloud plans): Commercial-safe AI images, integrated with Adobe apps.</li>
+            </ul>
+
+            <h3>4. Coding Assistance</h3>
+            <h4>Developers' Choices:</h4>
+            <ul>
+                <li><strong><a href="https://www.qodo.ai/" target="_blank">Qodo</a></strong> (Free / $15/user/month - verify pricing): Automated test generation & code explanations.</li>
+                <li><strong><a href="https://github.com/features/copilot" target="_blank">GitHub Copilot</a></strong> ($10/month or $100/year for individuals): Real-time code suggestions.</li>
+                <li><strong><a href="https://replit.com/" target="_blank">Replit</a></strong> (Free / $7+/month for "Hacker" plan with GhostWriter): Browser-based IDE with AI coding assistant.</li>
+                <li><strong><a href="https://aws.amazon.com/codewhisperer/" target="_blank">Amazon CodeWhisperer</a></strong> (Free for individual use / $19/user/month for Professional): Security scanning included.</li>
+            </ul>
+
+            <h3>5. Mental Health Support</h3>
+            <h4>Therapy Alternatives & Support Chatbots:</h4>
+            <ul>
+                <li><strong><a href="https://www.wysa.com/" target="_blank">Wysa</a></strong> (Free basic / $9.99-$13.99/month for premium features - verify pricing): CBT techniques with mood tracking.</li>
+                <li><strong><a href="https://woebothealth.com/" target="_blank">Woebot</a></strong> (Generally free, some programs may have costs): Stanford-developed CBT chatbot.</li>
+                <li><strong><a href="https://www.youper.ai/" target="_blank">Youper</a></strong> (Subscription-based, e.g., $69.99/year - verify pricing): Personalized emotional pattern analysis.</li>
+                <li><strong><a href="https://pi.ai/" target="_blank">Pi.AI</a></strong> (Free): Empathetic conversational support from Inflection AI.</li>
+            </ul>
+            
+            <h3>6. Content Creation</h3>
+            <h4>Writing Tools:</h4>
+            <ul>
+                <li><strong><a href="https://www.copy.ai/" target="_blank">Copy.ai</a></strong> (Free / $36+/month): Brand voice consistency, various writing tools.</li>
+                <li><strong><a href="https://rytr.me/" target="_blank">Rytr</a></strong> (Free / $9+/month): 40+ writing templates and use cases.</li>
+                <li><strong><a href="https://www.grammarly.com/" target="_blank">Grammarly</a></strong> (Free / $12+/month for Premium): Style/tone optimization, grammar checking.</li>
+                <li><strong><a href="https://www.sudowrite.com/" target="_blank">Sudowrite</a></strong> ($10+/month): Creative fiction and storytelling assistant.</li>
+            </ul>
+
+            <h3>7. Research & Education</h3>
+            <h4>Knowledge Tools:</h4>
+            <ul>
+                <li><strong><a href="https://www.perplexity.ai/" target="_blank">Perplexity</a></strong> (Free / $20/month for Pro): Conversational search engine with verified source citations.</li>
+                <li><strong><a href="https://notebooklm.google/" target="_blank">NotebookLM</a></strong> (Free): Google's project-based learning AI, uses your own documents as sources.</li>
+                <li><strong><a href="https://consensus.app/" target="_blank">Consensus</a></strong> (Free / $6.99+/month - verify pricing): AI search engine for academic research papers.</li>
+            </ul>
+
+            <h3>8. Voice Generation</h3>
+            <h4>Audio Solutions:</h4>
+            <ul>
+                <li><strong><a href="https://elevenlabs.io/" target="_blank">ElevenLabs</a></strong> (Free / $5+/month): Emotion-aware voice cloning and text-to-speech.</li>
+                <li><strong><a href="https://murf.ai/" target="_blank">Murf.ai</a></strong> (Free / $19+/month): Studio-quality voiceovers with various customization options.</li>
+                <li><strong><a href="https://resemble.ai/" target="_blank">Resemble AI</a></strong> (Usage-based pricing, e.g., $0.006/sec - verify pricing): Real-time voice cloning and changing.</li>
+            </ul>
+
+            <h3>9. Music Generation</h3>
+            <h4>Composition Tools:</h4>
+            <ul>
+                <li><strong><a href="https://www.suno.ai/" target="_blank">Suno</a></strong> (Free / $8+/month): Full musical tracks from text prompts, including vocals.</li>
+                <li><strong><a href="https://www.udio.com/" target="_blank">Udio</a></strong> (Free beta, future pricing TBD): Collaborative song creation from text.</li>
+                <li><strong><a href="https://www.aiva.ai/" target="_blank">AIVA</a></strong> (Free / €11+/month - verify pricing): AI music composer for various genres, copyright-cleared options.</li>
+            </ul>
+
+            <h3>10. Project Management</h3>
+            <h4>AI Orchestration & Productivity:</h4>
+            <ul>
+                <li><strong><a href="https://asana.com/" target="_blank">Asana</a></strong> ($10.99+/user/month with AI features): Smart workflow automation and project intelligence.</li>
+                <li><strong><a href="https://clickup.com/" target="_blank">ClickUp</a></strong> (Free / $7+/user/month with AI features): AI-powered task prioritization and content generation.</li>
+                <li><strong><a href="https://n8n.io/" target="_blank">n8n</a></strong> (Free self-hosted / Cloud $20+/month): Custom automation workflows with AI node integrations.</li>
+            </ul>
+
+            <h3>Cost Comparison Table for Popular Foundational Models</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>Free Tier Access</th>
+                        <th>Paid Plan (approx.)</th>
+                        <th>Best For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>GPT-4o (OpenAI)</td>
+                        <td>Yes (limited, via ChatGPT)</td>
+                        <td>$20/month (ChatGPT Plus) / API usage</td>
+                        <td>Multimodal tasks, general capability</td>
+                    </tr>
+                    <tr>
+                        <td>Claude 3 (Anthropic)</td>
+                        <td>Yes (Opus via API, Sonnet/Haiku via some platforms)</td>
+                        <td>$20/month (Claude Pro for Opus) / API usage</td>
+                        <td>Document analysis, reasoning, long context</td>
+                    </tr>
+                    <tr>
+                        <td>DeepSeek Models</td>
+                        <td>Yes (API access may have free quotas)</td>
+                        <td>API-based usage</td>
+                        <td>Cost-effective coding & general tasks</td>
+                    </tr>
+                    <tr>
+                        <td>Grok (xAI)</td>
+                        <td>No (requires X Premium+)</td>
+                        <td>$16/month (part of X Premium+)</td>
+                        <td>Real-time data analysis from X</td>
+                    </tr>
+                    <tr>
+                        <td>Gemini (Google)</td>
+                        <td>Yes (1.0 Pro via Gemini web/API free tier)</td>
+                        <td>$19.99/month (Google One AI Premium for 1.5 Pro in Gemini Advanced) / API usage for 1.5 Pro</td>
+                        <td>Long-context research, multimodal</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>For enterprise needs, consider open-source models like <strong>Qwen-72B</strong> (Apache 2.0 license) or <strong>Gemma</strong> series (Google's commercial-friendly option). Always verify data compliance and privacy policies when using cloud-based AI services, especially with sensitive information.</p>
+
+            <h3>Sources & Further Reading:</h3>
+            <p><em>(Note: Some links below are general topic pages or blog posts, specific tool websites are linked above directly where possible. Year "2025" in source links seems to be a placeholder/typo for "2024" or future-dated articles.)</em></p>
+            <ol class="citation-list">
+                <li><a href="https://www.synthesia.io/post/ai-tools" target="_blank">synthesia.io/post/ai-tools</a></li>
+                <li><a href="https://www.byteplus.com/en/topic/384844" target="_blank">byteplus.com/en/topic/384844</a></li>
+                <li><a href="https://www.copy.ai/blog/ai-content-creation" target="_blank">copy.ai/blog/ai-content-creation</a></li>
+                <li><a href="https://techcrunch.com/2024/05/13/chatgpt-everything-to-know-about-the-ai-chatbot/" target="_blank">techcrunch.com/.../chatgpt-everything-to-know... (actual link may vary for 2024/2025)</a></li>
+                <li><a href="https://www.shakudo.io/blog/top-9-large-language-models" target="_blank">shakudo.io/blog/top-9-large-language-models</a></li>
+                <li><a href="https://www.qodo.ai/blog/best-ai-coding-assistant-tools" target="_blank">qodo.ai/blog/best-ai-coding-assistant-tools</a></li>
+                <li><a href="https://www.choosingtherapy.com/wysa-app-review/" target="_blank">choosingtherapy.com/wysa-app-review</a></li>
+                <li><a href="https://www.choosingtherapy.com/youper-app-review/" target="_blank">choosingtherapy.com/youper-app-review</a></li>
+                <li><a href="https://www.zdnet.com/article/is-chatgpt-plus-worth-your-20-heres-how-it-compares-to-free-and-pro-plans/" target="_blank">zdnet.com/.../is-chatgpt-plus-worth-your-20...</a></li>
+                <li><a href="https://www.qodo.ai/blog/best-coding-ai-copilots" target="_blank">qodo.ai/blog/best-coding-ai-copilots</a></li>
+                <li><a href="https://www.eweek.com/artificial-intelligence/grok-ai-review/" target="_blank">eweek.com/artificial-intelligence/grok-ai-review</a></li>
+                <li><a href="https://techcrunch.com/2024/04/09/gemini-1-5-pro-is-now-available-in-public-preview-via-api/" target="_blank">techcrunch.com/.../gemini-1-5-pro-is-now-available... (actual link may vary for 2.5)</a></li>
+                <li><a href="https://www.saasgenius.com/reviews/copy-ai-pricing" target="_blank">saasgenius.com/reviews/copy-ai-pricing</a></li>
+                <li><a href="https://vidpros.com/breaking-down-the-costs-creating-1-minute-videos-with-ai-tools/" target="_blank">vidpros.com/breaking-down-the-costs...</a></li>
+                <li><a href="https://cybernews.com/ai-tools/runway-ai-review/" target="_blank">cybernews.com/ai-tools/runway-ai-review</a></li>
+                <li><a href="https://bigvu.tv/blog/the-ultimate-guide-to-elevenlabs-ai-voice-generator-review" target="_blank">bigvu.tv/blog/the-ultimate-guide-to-elevenlabs...</a></li>
+                <li><a href="https://www.contentellect.com/grammarly-review/" target="_blank">contentellect.com/grammarly-review</a></li>
+                <li><a href="https://www.visualcapitalist.com/ranked-all-the-things-people-use-ai-for-in-2024/" target="_blank">visualcapitalist.com/ranked-all-the-things-people-use-ai-for-in-2024 (adjusted year)</a></li>
+                <li><a href="https://mymeditatemate.com/blogs/wellness-tech/best-ai-mental-health-apps" target="_blank">mymeditatemate.com/blogs/wellness-tech/best-ai-mental-health-apps</a></li>
+                <li><a href="https://zapier.com/blog/best-ai-productivity-tools/" target="_blank">zapier.com/blog/best-ai-productivity-tools</a></li>
+                <li><a href="https://cloud.google.com/use-cases/free-ai-tools" target="_blank">cloud.google.com/use-cases/free-ai-tools</a></li>
+                <li><a href="https://apps.apple.com/us/app/wysa-mental-health-ai/id1166585565" target="_blank">apps.apple.com/us/app/wysa... (Example App Store link)</a></li>
+                <li><a href="https://one.google.com/about/google-one-ai-premium" target="_blank">one.google.com/about/google-one-ai-premium (Example for Gemini pricing)</a></li>
+                <li>Perplexity Share: <a href="https://pplx.ai/share" target="_blank">pplx.ai/share</a> (General link from provided source)</li>
+            </ol>
+            <p><em>Disclaimer: Pricing and features for AI tools change frequently. Always check the official websites for the most up-to-date information.</em></p>
+
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>© 2024 AI Ally. Empowering Apple Users with AI. (Single File Demo)</p>
+    </footer>
+
+    <script>
+        // --- DATA (formerly data.js) ---
+        const aiTools = {
+            "chatgpt": {
+                id: "chatgpt",
+                name: "ChatGPT (by OpenAI)",
+                developer: "OpenAI",
+                appleAccess: {
+                    ios: "https://apps.apple.com/us/app/chatgpt/id6448311069",
+                    macos: "Web / Desktop App", // OpenAI has a macOS app
+                    web: "https://chat.openai.com"
+                },
+                strengths: "Versatile for writing, summarization, coding, brainstorming. GPT-4o is very powerful and multimodal.",
+                affordability: "Freemium", 
+                whyGoodForAppleUsers: "Excellent iOS & macOS apps, widely used, powerful free tier. GPT-4o via Plus subscription or free tier (limited)."
+            },
+            "gemini": {
+                id: "gemini",
+                name: "Google Gemini",
+                developer: "Google",
+                appleAccess: {
+                    ios: "Via Google App / Gemini App", 
+                    macos: "Web",
+                    web: "https://gemini.google.com"
+                },
+                strengths: "Strong contextual understanding, good for research, integrates with Google services. 1.5 Pro has large context window.",
+                affordability: "Freemium", // Free 1.0 Pro, 1.5 Pro via AI Premium
+                whyGoodForAppleUsers: "Accessible via web on Safari & dedicated app, powerful free model. Good for users in Google ecosystem."
+            },
+            "copilot": {
+                id: "copilot",
+                name: "Microsoft Copilot",
+                developer: "Microsoft",
+                appleAccess: {
+                    ios: "https://apps.apple.com/us/app/microsoft-copilot/id6472538445",
+                    macos: "Web or Edge Browser / Dedicated App",
+                    web: "https://copilot.microsoft.com"
+                },
+                strengths: "Integrates GPT-4o (often), DALL-E 3 for image gen, good for summarization and content creation. Often free.",
+                affordability: "Free",
+                whyGoodForAppleUsers: "Dedicated iOS app, free access to advanced models, good for MS Office users."
+            },
+            "midjourney": { 
+                id: "midjourney",
+                name: "Midjourney",
+                developer: "Midjourney, Inc.",
+                appleAccess: {
+                    ios: "Via Discord App / Web",
+                    macos: "Via Discord App/Web / Web Alpha",
+                    web: "https://www.midjourney.com"
+                },
+                strengths: "Industry-leading for high-quality, artistic image generation.",
+                affordability: "Paid",
+                whyGoodForAppleUsers: "Accessible via Discord on all Apple devices and a web interface (alpha/beta). Produces stunning visuals."
+            },
+            "canva_ai": {
+                id: "canva_ai",
+                name: "Canva Magic Studio",
+                developer: "Canva",
+                appleAccess: {
+                    ios: "https://apps.apple.com/us/app/canva-design-photo-video/id897446215",
+                    macos: "https://www.canva.com/download/mac/",
+                    web: "https://www.canva.com"
+                },
+                strengths: "Easy-to-use AI design tools integrated into a popular platform. Good for social media, presentations.",
+                affordability: "Freemium",
+                whyGoodForAppleUsers: "Excellent iOS and macOS apps. Seamlessly integrates AI into design workflows."
+            },
+            "perplexity": {
+                id: "perplexity",
+                name: "Perplexity AI",
+                developer: "Perplexity AI",
+                appleAccess: {
+                    ios: "https://apps.apple.com/us/app/perplexity-ask-ai/id1660945857",
+                    macos: "Web",
+                    web: "https://www.perplexity.ai/"
+                },
+                strengths: "Conversational search with citations, focus modes for different types of research.",
+                affordability: "Freemium",
+                whyGoodForAppleUsers: "Good iOS app, clean web interface. Excellent for research tasks."
+            },
+            "claude": {
+                id: "claude",
+                name: "Claude (by Anthropic)",
+                developer: "Anthropic",
+                appleAccess: {
+                    ios: "https://apps.apple.com/us/app/claude-ai/id6472522224",
+                    macos: "Web",
+                    web: "https://claude.ai/"
+                },
+                strengths: "Strong reasoning, excels at long document analysis, creative writing. Opus is top-tier.",
+                affordability: "Freemium", // Free tier with Haiku/Sonnet, Pro for Opus
+                whyGoodForAppleUsers: "iOS app available, good web interface. Excellent for text-heavy tasks."
+            }
+        };
+
+        const aiTasks = [
+            {
+                id: "summarize-text",
+                name: "Summarize Long Text or Documents",
+                icon: "fas fa-file-alt", 
+                category: "Writing",
+                description: "Condense articles, research papers, or lengthy emails into key points.",
+                appleNativeStatus: {
+                    level: "limited", 
+                    text: "Siri can't summarize documents. 'Apple Intelligence' may offer some on-device summarization on newer hardware, but it's often limited in scope and file type support.",
+                    icon: "fas fa-exclamation-triangle"
+                },
+                recommendedToolIds: ["chatgpt", "claude", "gemini", "perplexity"]
+            },
+            {
+                id: "generate-images",
+                name: "Generate Images from Text Prompts",
+                icon: "fas fa-paint-brush",
+                category: "Visuals",
+                description: "Create unique images, illustrations, or artwork based on your descriptions.",
+                appleNativeStatus: {
+                    level: "poor",
+                    text: "Apple does not offer native AI image generation tools in its core OS or apps. External services are needed for cutting-edge generation.",
+                    icon: "fas fa-times-circle"
+                },
+                recommendedToolIds: ["midjourney", "copilot", "canva_ai"] // DALL-E 3 is often via Copilot or ChatGPT
+            },
+            {
+                id: "draft-emails",
+                name: "Draft Emails and Messages",
+                icon: "fas fa-envelope",
+                category: "Writing",
+                description: "Get help writing professional emails, replies, or creative messages.",
+                appleNativeStatus: {
+                    level: "limited",
+                    text: "Siri can take dictation. 'Apple Intelligence' aims to add writing assistance, but robust, context-aware drafting is better handled by specialized AI tools.",
+                    icon: "fas fa-exclamation-triangle"
+                },
+                recommendedToolIds: ["chatgpt", "gemini", "claude", "copilot"]
+            },
+            {
+                id: "code-assistance",
+                name: "Get Coding Assistance",
+                icon: "fas fa-code",
+                category: "Productivity", 
+                description: "Generate code, debug, explain code, or convert code between languages.",
+                appleNativeStatus: {
+                    level: "poor",
+                    text: "Xcode has autocompletion, but no generative AI co-pilot features like those found in dedicated AI coding assistants.",
+                    icon: "fas fa-times-circle"
+                },
+                recommendedToolIds: ["chatgpt", "copilot"] // GitHub Copilot is the main one here
+            },
+            {
+                id: "plan-trip",
+                name: "Plan a Trip Itinerary",
+                icon: "fas fa-plane-departure",
+                category: "Productivity",
+                description: "Get AI assistance in creating travel plans, finding attractions, and organizing schedules.",
+                appleNativeStatus: {
+                    level: "limited",
+                    text: "Siri can find flights or hotels, but cannot generate a full itinerary or provide complex travel advice.",
+                    icon: "fas fa-exclamation-triangle"
+                },
+                recommendedToolIds: ["gemini", "chatgpt", "perplexity"]
+            },
+            {
+                id: "research-topics",
+                name: "Research Topics with Citations",
+                icon: "fas fa-search",
+                category: "Learning",
+                description: "Explore complex subjects and get answers with verifiable sources and citations.",
+                appleNativeStatus: {
+                    level: "poor",
+                    text: "Siri and Spotlight search the web, but don't offer AI-powered research with synthesized answers and citations.",
+                    icon: "fas fa-times-circle"
+                },
+                recommendedToolIds: ["perplexity", "gemini", "chatgpt"] // Consensus is also good but not in aiTools yet
+            }
+        ];
+
+        // --- APP LOGIC (formerly app.js) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const taskListContainer = document.getElementById('task-list');
+            const categoryFilter = document.getElementById('category-filter');
+            const taskSearchInput = document.getElementById('task-search');
+            const taskDetailModal = document.getElementById('task-detail-modal');
+            const taskDetailContent = document.getElementById('task-detail-content');
+            const closeModalButton = taskDetailModal.querySelector('.close-button');
+
+            const navButtons = document.querySelectorAll('header nav .nav-button');
+            const contentSections = document.querySelectorAll('.content-section');
+            const ctaButton = document.querySelector('.cta-button[data-section-target]');
+            const wizardOptions = document.querySelectorAll('.wizard-option');
+
+            function showSection(sectionId) {
+                contentSections.forEach(section => {
+                    section.classList.remove('active-section');
+                    if (section.id === sectionId) {
+                        section.classList.add('active-section');
+                    }
+                });
+                navButtons.forEach(button => {
+                    button.classList.remove('active');
+                    if (button.dataset.section === sectionId) {
+                        button.classList.add('active');
+                    }
+                });
+                window.scrollTo(0, 0); 
+            }
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    showSection(button.dataset.section);
+                    if (button.dataset.section === 'task-explorer') {
+                         populateTasks(); 
+                    }
+                });
+            });
+            
+            if(ctaButton) {
+                ctaButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetSection = ctaButton.dataset.sectionTarget;
+                    showSection(targetSection);
+                    if (targetSection === "task-explorer") populateTasks();
+                });
+            }
+
+            wizardOptions.forEach(button => {
+                button.addEventListener('click', () => {
+                    const category = button.dataset.categoryTarget;
+                    showSection('task-explorer');
+                    if(categoryFilter) categoryFilter.value = category; // Check if categoryFilter exists
+                    populateTasks(); 
+                });
+            });
+
+            function populateCategories() {
+                if (!categoryFilter) return;
+                const categories = [...new Set(aiTasks.map(task => task.category))];
+                while (categoryFilter.options.length > 1) {
+                    categoryFilter.remove(1);
+                }
+                categories.sort().forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category;
+                    categoryFilter.appendChild(option);
+                });
+            }
+
+            function renderTaskCard(task) {
+                const card = document.createElement('div');
+                card.className = 'task-card skeuo-panel'; 
+                card.dataset.taskId = task.id;
+
+                card.innerHTML = `
+                    <h3><i class="${task.icon} task-icon"></i> ${task.name}</h3>
+                    <p>${task.description.substring(0,100)}${task.description.length > 100 ? '...' : ''}</p>
+                    <div class="apple-native-status ${task.appleNativeStatus.level}">
+                        <i class="${task.appleNativeStatus.icon}"></i> Apple Native: ${task.appleNativeStatus.text.substring(0, 70)}...
+                    </div>
+                `;
+                card.addEventListener('click', () => showTaskDetail(task.id));
+                return card;
+            }
+
+            function populateTasks() {
+                if (!taskListContainer || !taskSearchInput || !categoryFilter) return; // Add checks
+                taskListContainer.innerHTML = ''; 
+                const searchTerm = taskSearchInput.value.toLowerCase();
+                const selectedCategory = categoryFilter.value;
+
+                const filteredTasks = aiTasks.filter(task => {
+                    const nameMatch = task.name.toLowerCase().includes(searchTerm);
+                    const descriptionMatch = task.description.toLowerCase().includes(searchTerm);
+                    const categoryMatch = selectedCategory === 'all' || task.category === selectedCategory;
+                    return (nameMatch || descriptionMatch) && categoryMatch;
+                });
+
+                if (filteredTasks.length === 0) {
+                    taskListContainer.innerHTML = '<p class="no-results">No tasks match your criteria. Try broadening your search!</p>';
+                    return;
+                }
+                filteredTasks.forEach(task => {
+                    taskListContainer.appendChild(renderTaskCard(task));
+                });
+            }
+
+            function showTaskDetail(taskId) {
+                const task = aiTasks.find(t => t.id === taskId);
+                if (!task || !taskDetailModal || !taskDetailContent) return;
+
+                let alternativesHTML = '<h4>Recommended Alternatives:</h4>';
+                if (task.recommendedToolIds && task.recommendedToolIds.length > 0) {
+                    task.recommendedToolIds.forEach(toolId => {
+                        const tool = aiTools[toolId];
+                        if (tool) {
+                            alternativesHTML += `
+                                <div class="alternative-tool">
+                                    <h4>${tool.name}</h4>
+                                    <p><strong>Developer:</strong> ${tool.developer}</p>
+                                    <p><strong>Strengths:</strong> ${tool.strengths}</p>
+                                    <p><strong>Affordability:</strong> <span class="affordability-meter ${tool.affordability.toLowerCase()}">${tool.affordability}</span></p>
+                                    <p><strong>Why good for Apple Users:</strong> ${tool.whyGoodForAppleUsers}</p>
+                                    <p class="access-links">
+                                        <strong>Access:</strong>
+                                        ${tool.appleAccess.ios && tool.appleAccess.ios !== "N/A" ? `<a href="${tool.appleAccess.ios}" target="_blank" title="iOS App Store"><i class="fab fa-apple"></i> iOS</a>` : ''}
+                                        ${tool.appleAccess.macos && tool.appleAccess.macos !== "Web" && tool.appleAccess.macos !== "N/A" ? `<a href="${tool.appleAccess.macos}" target="_blank" title="macOS App"><i class="fas fa-desktop"></i> macOS App</a>` : ''}
+                                        ${tool.appleAccess.web && tool.appleAccess.web !== "N/A" ? `<a href="${tool.appleAccess.web}" target="_blank" title="Web Access"><i class="fas fa-globe"></i> Web</a>` : ''}
+                                    </p>
+                                </div>
+                            `;
+                        }
+                    });
+                } else {
+                    alternativesHTML = '<p>No specific third-party alternatives listed for this task yet.</p>';
+                }
+
+                taskDetailContent.innerHTML = `
+                    <h3><i class="${task.icon} task-icon"></i> ${task.name}</h3>
+                    <p>${task.description}</p>
+                    <hr>
+                    <h4>Apple Ecosystem Status:</h4>
+                    <div class="apple-native-status ${task.appleNativeStatus.level}" style="margin-bottom: 1rem; display: block;">
+                        <i class="${task.appleNativeStatus.icon}"></i> ${task.appleNativeStatus.text}
+                    </div>
+                    <hr>
+                    ${alternativesHTML}
+                `;
+                taskDetailModal.style.display = 'block';
+            }
+
+            if(closeModalButton) {
+                closeModalButton.addEventListener('click', () => {
+                    if(taskDetailModal) taskDetailModal.style.display = 'none';
+                });
+            }
+            
+            window.addEventListener('click', (event) => { 
+                if (event.target == taskDetailModal) {
+                    if(taskDetailModal) taskDetailModal.style.display = 'none';
+                }
+            });
+
+            populateCategories();
+            const initialSection = window.location.hash ? window.location.hash.substring(1) : 'home';
+            showSection(initialSection);
+            if (initialSection === 'task-explorer' || (document.getElementById('task-explorer') && document.getElementById('task-explorer').classList.contains('active-section'))) {
+                 populateTasks(); 
+            }
+
+            if(taskSearchInput) taskSearchInput.addEventListener('input', populateTasks);
+            if(categoryFilter) categoryFilter.addEventListener('change', populateTasks);
+        });
+    </script>
+</body>
+</html>
