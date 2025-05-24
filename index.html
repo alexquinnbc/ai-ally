@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Ally for Apple Users (Single File)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Basic Reset & Defaults */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f0f0f0; /* Light gray background */
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header Styling */
+        .main-header {
+            background-color: #333; /* Darker header for contrast */
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        /* .logo class was for an img, no longer needed if h1 is the logo */
+        .main-header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0; /* Reset margin for h1 inside flex container */
+        }
+
+        .nav-button {
+            background: none;
+            border: none;
+            color: #ccc;
+            padding: 0.5rem 1rem;
+            margin-left: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .nav-button:hover, .nav-button.active {
+            background-color: #555;
+            color: white;
+        }
+
+        /* Main Content Area */
+        main {
+            flex-grow: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto; /* Center content */
+            width: 100%;
+        }
+
+        .content-section {
+            display: none; /* Hidden by default, JS will show active section */
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .content-section.active-section {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .content-section h2 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e0e0e0; /* Skeuomorphic separator */
+        }
+
+        /* Home Section */
+        .hero-banner {
+            text-align: center;
+            padding: 2rem;
+            background-color: #fff; 
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .hero-banner h2 {
+            border-bottom: none;
+            color: #1a5f99;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: #007aff; /* Apple blue */
+            color: white;
+            padding: 0.8rem 1.8rem;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 1rem;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+            text-shadow: 0 -1px 0px rgba(0,0,0,0.2);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2),
+                        inset 0 1px 0px rgba(255,255,255,0.3);
+        }
+        .cta-button:hover {
+            background-color: #005ecb;
+            transform: translateY(-2px);
+        }
+        .cta-button:active {
+            transform: translateY(0px);
+            background-color: #004a9b;
+            box-shadow: inset 0 2px 3px rgba(0,0,0,0.3),
+                        0 0 0px rgba(255,255,255,0);
+        }
+
+        .quick-start-wizard {
+            text-align: center;
+            margin-top: 2rem;
+        }
+        .quick-start-wizard h3 {
+            margin-bottom: 1rem;
+            font-weight: 500;
+            color: #444;
+        }
+        .wizard-options {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .wizard-option {
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            transition: all 0.2s ease;
+            min-width: 180px;
+        }
+        .wizard-option i {
+            margin-right: 0.5rem;
+            color: #007aff;
+        }
+        .wizard-option:hover {
+            border-color: #007aff;
+            background-color: #f0f8ff; /* Light blue */
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+
+        /* Understand Apple Section */
+        .supportive-intro, .empowering-note {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: #555;
+        }
+        .info-card {
+            background: linear-gradient(145deg, #ffffff, #e8e8e8);
+            border: 1px solid #d8d8d8;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            box-shadow: 4px 4px 8px #cccccc,
+                        -4px -4px 8px #ffffff;
+        }
+        .info-card-icon {
+            font-size: 1.8rem;
+            color: #007aff;
+            margin-top: 0.2rem;
+            min-width: 30px; 
+            text-align: center;
+        }
+        .info-card h3 {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+
+        /* Task Explorer Section */
+        .search-filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: center;
+        }
+
+        #task-search, #category-filter {
+            padding: 0.75rem;
+            font-size: 1rem;
+            border: 1px solid #bbb; /* Darker border for skeuo */
+            border-radius: 6px;
+            background: linear-gradient(to bottom, #fefefe, #f0f0f0); /* Subtle gradient */
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.1); /* Inner shadow */
+        }
+        #task-search { flex-grow: 1; }
+        #category-filter { background-color: white; } /* Selects don't take gradients well */
+
+
+        .task-list-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .task-card { /* Using .skeuo-panel from below */
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .task-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 7px 7px 15px #b9b9b9,
+                        -7px -7px 15px #ffffff,
+                        inset 1px 1px 2px #ffffff, 
+                        inset -1px -1px 2px #c7c7c7;
+        }
+
+        .task-card h3 {
+            font-size: 1.4rem;
+            color: #005ecb; 
+            margin-bottom: 0.5rem;
+        }
+
+        .task-card .task-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+            color: #007aff;
+        }
+
+        .task-card p {
+            font-size: 0.95rem;
+            color: #555;
+            margin-bottom: 1rem;
+        }
+
+        .apple-native-status {
+            font-size: 0.9rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+        .apple-native-status.good { background-color: #e6ffed; color: #28a745; border: 1px solid #c3e6cb;}
+        .apple-native-status.limited { background-color: #fff3cd; color: #ffc107; border: 1px solid #ffeeba;}
+        .apple-native-status.poor { background-color: #f8d7da; color: #dc3545; border: 1px solid #f5c6cb;}
+        .apple-native-status i { margin-right: 5px; }
+
+        /* Learn & Grow Section */
+        .learn-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .learn-card { /* Using .skeuo-paper from below */
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .learn-card .icon-learn {
+            font-size: 2.5rem;
+            color: #007aff;
+            margin-bottom: 1rem;
+        }
+        .learn-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        .learn-card p {
+            font-size: 0.95rem;
+            color: #555;
+            margin-bottom: 1rem;
+        }
+        .learn-more-button { /* Applying .skeuo-button style */
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        /* Modal Styling for Task Details */
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6); 
+            animation: fadeInModal 0.3s ease-out;
+        }
+
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content { /* Using .skeuo-panel from below */
+            margin: 5% auto;
+            width: 80%;
+            max-width: 700px;
+            position: relative;
+            animation: slideInModal 0.3s ease-out;
+        }
+
+        @keyframes slideInModal {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            background: none;
+            border: none;
+            cursor: pointer;
+            line-height: 1; /* Ensure it aligns well */
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+        #task-detail-content h3 {
+            margin-top: 0;
+            color: #005ecb;
+        }
+        #task-detail-content .alternative-tool {
+            border: 1px solid #e0e0e0;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 6px;
+            background-color: #f9f9f9; /* Lighter background for contrast within panel */
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+        }
+        /* Removed .tool-logo img style as images are removed */
+        #task-detail-content .alternative-tool h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+            display: flex; /* For icon alignment if added later */
+            align-items: center;
+        }
+        #task-detail-content .alternative-tool p {
+            font-size: 0.9rem;
+            margin-bottom: 0.2rem;
+        }
+        #task-detail-content .alternative-tool .access-links a {
+            margin-right: 10px;
+            color: #007aff;
+            text-decoration: none;
+        }
+        #task-detail-content .alternative-tool .access-links a:hover {
+            text-decoration: underline;
+        }
+        #task-detail-content .affordability-meter {
+            font-weight: bold;
+        }
+        #task-detail-content .affordability-meter.free { color: #28a745; }
+        #task-detail-content .affordability-meter.freemium { color: #fd7e14; }
+        #task-detail-content .affordability-meter.paid { color: #dc3545; }
+
+        /* Footer Styling */
+        .main-footer {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: #222; 
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-top: auto; 
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .main-header {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            .main-header nav {
+                margin-top: 0.5rem;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .nav-button {
+                margin: 0.2rem;
+            }
+            main {
+                padding: 1rem;
+            }
+            .task-list-container {
+                grid-template-columns: 1fr; 
+            }
+            .modal-content {
+                width: 90%;
+                margin: 10% auto;
+            }
+            .wizard-options {
+                flex-direction: column;
+            }
+            .search-filter-bar {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            #task-search, #category-filter {
+                width: 100%;
+            }
+        }
+
+        /* SKEUOMORPHISM CSS */
+        .skeuo-panel {
+            background: linear-gradient(145deg, #f7f7f7, #e0e0e0);
+            border-radius: 12px;
+            box-shadow: 5px 5px 10px #c7c7c7,
+                        -5px -5px 10px #ffffff,
+                        inset 1px 1px 2px #ffffff, 
+                        inset -1px -1px 2px #c7c7c7; 
+            padding: 20px;
+            border: 1px solid #d1d1d1; 
+        }
+
+        .skeuo-button, .learn-more-button /* Applied to learn-more-button directly */ {
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #555;
+            text-shadow: 0 1px 0px rgba(255,255,255,0.7);
+            background: linear-gradient(to bottom, #f7f7f7 0%, #e0e0e0 100%);
+            border: 1px solid #bbb;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1), 
+                        inset 0 1px 0px rgba(255,255,255,0.5); 
+            cursor: pointer;
+            transition: all 0.1s ease-in-out;
+        }
+
+        .skeuo-button:hover, .learn-more-button:hover {
+            background: linear-gradient(to bottom, #efefef 0%, #d9d9d9 100%);
+            border-color: #aaa;
+        }
+
+        .skeuo-button:active, .learn-more-button:active {
+            background: linear-gradient(to bottom, #d9d9d9 0%, #efefef 100%);
+            box-shadow: inset 0 2px 3px rgba(0,0,0,0.2), 
+                        0 0 0px rgba(255,255,255,0); 
+            transform: translateY(1px);
+        }
+
+        .skeuo-paper, .learn-card /* Applied to learn-card directly */ {
+            background-color: #fdfdfa; 
+            border: 1px solid #e0e0cc;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.05),
+                        inset 0 0 10px rgba(0,0,0,0.02); 
+            border-radius: 4px; 
+            padding: 1.5rem; /* Ensure padding is consistent */
+        }
+        .no-results {
+            text-align: center;
+            padding: 2rem;
+            color: #777;
+            grid-column: 1 / -1; /* Span full width if in grid */
+        }
+
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="logo-container">
+            <h1>AI Ally</h1>
+        </div>
+        <nav>
+            <button data-section="home" class="nav-button active">Home</button>
+            <button data-section="understand-apple" class="nav-button">Apple's AI</button>
+            <button data-section="task-explorer" class="nav-button">Task Explorer</button>
+            <button data-section="learn-grow" class="nav-button">Learn & Grow</button>
+        </nav>
+    </header>
+
+    <main>
+        <!-- SECTION: Home / Welcome -->
+        <section id="home" class="content-section active-section">
+            <div class="hero-banner skeuo-panel">
+                <h2>Unlock the Full Power of AI on Your Apple Devices.</h2>
+                <p>Navigate the AI landscape with clarity. Discover tools that work <em>for you</em>, even when Apple's native options fall short.</p>
+                <button class="cta-button" data-section-target="task-explorer">Explore AI Tasks Now</button>
+            </div>
+
+            <div class="quick-start-wizard">
+                <h3>What do you want to achieve with AI today?</h3>
+                <div class="wizard-options">
+                    <button class="wizard-option skeuo-button" data-category-target="Writing">
+                        <i class="fas fa-pencil-alt"></i> Writing & Content
+                    </button>
+                    <button class="wizard-option skeuo-button" data-category-target="Visuals">
+                        <i class="fas fa-image"></i> Image & Video
+                    </button>
+                    <button class="wizard-option skeuo-button" data-category-target="Productivity">
+                        <i class="fas fa-rocket"></i> Productivity
+                    </button>
+                    <button class="wizard-option skeuo-button" data-category-target="Learning">
+                        <i class="fas fa-book-open"></i> Research & Learning
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: Understand Apple's AI -->
+        <section id="understand-apple" class="content-section">
+            <h2>Your Apple Devices & AI: The Current Picture</h2>
+            <p class="supportive-intro">We love our Apple devices for their design, security, and ecosystem. When it comes to cutting-edge AI, however, there are some things to be aware of so you can make the most informed choices.</p>
+            
+            <div class="info-card">
+                <div class="info-card-icon"><i class="fas fa-microphone-alt-slash"></i></div>
+                <div>
+                    <h3>Siri's Journey & Limitations</h3>
+                    <p>Siri pioneered voice assistants, but for complex tasks requiring deep understanding or multi-app integration, alternatives like Google Assistant or Microsoft Copilot often provide more robust solutions. We'll show you how to access them!</p>
+                </div>
+            </div>
+
+            <div class="info-card">
+                 <div class="info-card-icon"><i class="fas fa-mobile-alt"></i></div>
+                 <div>
+                    <h3>"Apple Intelligence" & Hardware</h3>
+                    <p>Apple's new AI features are promising but often require the latest hardware (e.g., iPhone 15 Pro, M-series Macs). AI Ally helps you find powerful AI tools that work great on your current devices.</p>
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <div class="info-card-icon"><i class="fas fa-dollar-sign"></i></div>
+                <div>
+                    <h3>The "Premium" Gap</h3>
+                    <p>You don't always need expensive subscriptions for top-tier AI. We highlight fantastic free and affordable alternatives to tools like ChatGPT Plus, ensuring you get great value.</p>
+                </div>
+            </div>
+            <p class="empowering-note">Our goal is to empower you, not to criticize. Knowledge is power, and with AI Ally, you'll have the power to choose the best AI for your needs!</p>
+        </section>
+
+        <!-- SECTION: Task Explorer -->
+        <section id="task-explorer" class="content-section">
+            <h2>AI Task Explorer</h2>
+            <div class="search-filter-bar">
+                <input type="search" id="task-search" placeholder="e.g., summarize PDF, generate logo...">
+                <select id="category-filter">
+                    <option value="all">All Categories</option>
+                    <!-- Categories will be populated by JS -->
+                </select>
+            </div>
+            <div id="task-list" class="task-list-container">
+                <!-- AI Task Cards will be injected here by JavaScript -->
+            </div>
+        </section>
+
+        <!-- SECTION: Task Detail View (Modal or separate area) -->
+        <div id="task-detail-modal" class="modal">
+            <div class="modal-content skeuo-panel">
+                <button class="close-button">×</button>
+                <div id="task-detail-content">
+                    <!-- Task details will be injected here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- SECTION: Learn & Grow -->
+        <section id="learn-grow" class="content-section">
+            <h2>Learn & Grow with AI</h2>
+            <p>Expand your AI knowledge with our curated resources.</p>
+            <div class="learn-grid">
+                <div class="learn-card"> <!-- .skeuo-paper applied via CSS -->
+                    <i class="fas fa-brain icon-learn"></i>
+                    <h3>AI Basics 101</h3>
+                    <p>Understand terms like LLM, Generative AI, and Prompt Engineering in simple language.</p>
+                    <a href="#" class="learn-more-button">Read More</a>
+                </div>
+                <div class="learn-card">
+                    <i class="fas fa-comments icon-learn"></i>
+                    <h3>Effective Prompting</h3>
+                    <p>Learn how to talk to AI models to get the best possible results for your tasks.</p>
+                    <a href="#" class="learn-more-button">Master Prompts</a>
+                </div>
+                <div class="learn-card">
+                    <i class="fas fa-balance-scale icon-learn"></i>
+                    <h3>Ethical AI Use</h3>
+                    <p>Explore important considerations like privacy, bias, and responsible AI usage.</p>
+                    <a href="#" class="learn-more-button">Learn Ethics</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>© 2024 AI Ally. Empowering Apple Users with AI. (Single File Demo)</p>
+    </footer>
+
+    <script>
+        // --- DATA (formerly data.js) ---
+        const aiTools = {
+            "chatgpt": {
+                id: "chatgpt",
+                name: "ChatGPT (by OpenAI)",
+                // logo property removed
+                developer: "OpenAI",
+                appleAccess: {
+                    ios: "https://apps.apple.com/us/app/chatgpt/id6448311069",
+                    macos: "Web",
+                    web: "https://chat.openai.com"
+                },
+                strengths: "Versatile for writing, summarization, coding, brainstorming. GPT-4 is very powerful.",
+                affordability: "Freemium", // "Free", "Freemium", "Paid"
+                whyGoodForAppleUsers: "Excellent iOS app, widely used, powerful free tier. GPT-4 via Plus subscription."
+            },
+            "gemini": {
+                id: "gemini",
+                name: "Google Gemini",
+                developer: "Google",
+                appleAccess: {
+                    ios: "Via Google App or Web", 
+                    macos: "Web",
+                    web: "https://gemini.google.com"
+                },
+                strengths: "Strong contextual understanding, good for research, integrates with Google services. Free access to advanced models.",
+                affordability: "Free",
+                whyGoodForAppleUsers: "Accessible via web on Safari, powerful free model. Good for users in Google ecosystem."
+            },
+            "copilot": {
+                id: "copilot",
+                name: "Microsoft Copilot",
+                developer: "Microsoft",
+                appleAccess: {
+                    ios: "https://apps.apple.com/us/app/microsoft-copilot/id6472538445",
+                    macos: "Web or Edge Browser",
+                    web: "https://copilot.microsoft.com"
+                },
+                strengths: "Integrates GPT-4, DALL-E 3 for image gen, good for summarization and content creation. Often free.",
+                affordability: "Free",
+                whyGoodForAppleUsers: "Dedicated iOS app, free access to advanced models (GPT-4), good for MS Office users."
+            },
+            "midjourney": { // Note: Midjourney is highly visual, removing its logo makes it less distinct.
+                id: "midjourney",
+                name: "Midjourney",
+                developer: "Midjourney, Inc.",
+                appleAccess: {
+                    ios: "Via Discord App",
+                    macos: "Via Discord App/Web",
+                    web: "Via Discord"
+                },
+                strengths: "Industry-leading for high-quality, artistic image generation.",
+                affordability: "Paid",
+                whyGoodForAppleUsers: "Accessible via Discord on all Apple devices. Produces stunning visuals."
+            },
+            "canva_ai": {
+                id: "canva_ai",
+                name: "Canva Magic Studio",
+                developer: "Canva",
+                appleAccess: {
+                    ios: "https://apps.apple.com/us/app/canva-design-photo-video/id897446215",
+                    macos: "https://www.canva.com/download/mac/",
+                    web: "https://www.canva.com"
+                },
+                strengths: "Easy-to-use AI design tools integrated into a popular platform. Good for social media, presentations.",
+                affordability: "Freemium",
+                whyGoodForAppleUsers: "Excellent iOS and macOS apps. Seamlessly integrates AI into design workflows."
+            }
+        };
+
+        const aiTasks = [
+            {
+                id: "summarize-text",
+                name: "Summarize Long Text or Documents",
+                icon: "fas fa-file-alt", 
+                category: "Writing",
+                description: "Condense articles, research papers, or lengthy emails into key points.",
+                appleNativeStatus: {
+                    level: "limited", 
+                    text: "Siri can't summarize documents. 'Apple Intelligence' may offer some on-device summarization on newer hardware, but it's often limited in scope and file type support.",
+                    icon: "fas fa-exclamation-triangle"
+                },
+                recommendedToolIds: ["chatgpt", "gemini", "copilot"]
+            },
+            {
+                id: "generate-images",
+                name: "Generate Images from Text Prompts",
+                icon: "fas fa-paint-brush",
+                category: "Visuals",
+                description: "Create unique images, illustrations, or artwork based on your descriptions.",
+                appleNativeStatus: {
+                    level: "poor",
+                    text: "Apple does not offer native AI image generation tools in its core OS or apps. External services are needed for cutting-edge generation.",
+                    icon: "fas fa-times-circle"
+                },
+                recommendedToolIds: ["copilot", "midjourney", "canva_ai"]
+            },
+            {
+                id: "draft-emails",
+                name: "Draft Emails and Messages",
+                icon: "fas fa-envelope",
+                category: "Writing",
+                description: "Get help writing professional emails, replies, or creative messages.",
+                appleNativeStatus: {
+                    level: "limited",
+                    text: "Siri can take dictation. 'Apple Intelligence' aims to add writing assistance, but robust, context-aware drafting is better handled by specialized AI tools.",
+                    icon: "fas fa-exclamation-triangle"
+                },
+                recommendedToolIds: ["chatgpt", "gemini", "copilot"]
+            },
+            {
+                id: "code-assistance",
+                name: "Get Coding Assistance",
+                icon: "fas fa-code",
+                category: "Productivity", 
+                description: "Generate code, debug, explain code, or convert code between languages.",
+                appleNativeStatus: {
+                    level: "poor",
+                    text: "Xcode has autocompletion, but no generative AI co-pilot features like those found in dedicated AI coding assistants.",
+                    icon: "fas fa-times-circle"
+                },
+                recommendedToolIds: ["chatgpt", "copilot"] 
+            },
+            {
+                id: "plan-trip",
+                name: "Plan a Trip Itinerary",
+                icon: "fas fa-plane-departure",
+                category: "Productivity",
+                description: "Get AI assistance in creating travel plans, finding attractions, and organizing schedules.",
+                appleNativeStatus: {
+                    level: "limited",
+                    text: "Siri can find flights or hotels, but cannot generate a full itinerary or provide complex travel advice.",
+                    icon: "fas fa-exclamation-triangle"
+                },
+                recommendedToolIds: ["gemini", "chatgpt"]
+            }
+        ];
+
+        // --- APP LOGIC (formerly app.js) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const taskListContainer = document.getElementById('task-list');
+            const categoryFilter = document.getElementById('category-filter');
+            const taskSearchInput = document.getElementById('task-search');
+            const taskDetailModal = document.getElementById('task-detail-modal');
+            const taskDetailContent = document.getElementById('task-detail-content');
+            const closeModalButton = taskDetailModal.querySelector('.close-button');
+
+            const navButtons = document.querySelectorAll('header nav .nav-button');
+            const contentSections = document.querySelectorAll('.content-section');
+            const ctaButton = document.querySelector('.cta-button[data-section-target]');
+            const wizardOptions = document.querySelectorAll('.wizard-option');
+
+            function showSection(sectionId) {
+                contentSections.forEach(section => {
+                    section.classList.remove('active-section');
+                    if (section.id === sectionId) {
+                        section.classList.add('active-section');
+                    }
+                });
+                navButtons.forEach(button => {
+                    button.classList.remove('active');
+                    if (button.dataset.section === sectionId) {
+                        button.classList.add('active');
+                    }
+                });
+                window.scrollTo(0, 0); 
+            }
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    showSection(button.dataset.section);
+                    if (button.dataset.section === 'task-explorer') {
+                         populateTasks(); // Ensure tasks are populated when navigating to explorer
+                    }
+                });
+            });
+            
+            if(ctaButton) {
+                ctaButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetSection = ctaButton.dataset.sectionTarget;
+                    showSection(targetSection);
+                    if (targetSection === "task-explorer") populateTasks();
+                });
+            }
+
+            wizardOptions.forEach(button => {
+                button.addEventListener('click', () => {
+                    const category = button.dataset.categoryTarget;
+                    showSection('task-explorer');
+                    categoryFilter.value = category;
+                    populateTasks(); 
+                });
+            });
+
+            function populateCategories() {
+                if (!categoryFilter) return;
+                const categories = [...new Set(aiTasks.map(task => task.category))];
+                // Clear existing options except the first "All Categories"
+                while (categoryFilter.options.length > 1) {
+                    categoryFilter.remove(1);
+                }
+                categories.sort().forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category;
+                    categoryFilter.appendChild(option);
+                });
+            }
+
+            function renderTaskCard(task) {
+                const card = document.createElement('div');
+                card.className = 'task-card skeuo-panel'; 
+                card.dataset.taskId = task.id;
+
+                card.innerHTML = `
+                    <h3><i class="${task.icon} task-icon"></i> ${task.name}</h3>
+                    <p>${task.description.substring(0,100)}${task.description.length > 100 ? '...' : ''}</p>
+                    <div class="apple-native-status ${task.appleNativeStatus.level}">
+                        <i class="${task.appleNativeStatus.icon}"></i> Apple Native: ${task.appleNativeStatus.text.substring(0, 70)}...
+                    </div>
+                `;
+                card.addEventListener('click', () => showTaskDetail(task.id));
+                return card;
+            }
+
+            function populateTasks() {
+                if (!taskListContainer) return;
+                taskListContainer.innerHTML = ''; 
+                const searchTerm = taskSearchInput.value.toLowerCase();
+                const selectedCategory = categoryFilter.value;
+
+                const filteredTasks = aiTasks.filter(task => {
+                    const nameMatch = task.name.toLowerCase().includes(searchTerm);
+                    const descriptionMatch = task.description.toLowerCase().includes(searchTerm);
+                    const categoryMatch = selectedCategory === 'all' || task.category === selectedCategory;
+                    return (nameMatch || descriptionMatch) && categoryMatch;
+                });
+
+                if (filteredTasks.length === 0) {
+                    taskListContainer.innerHTML = '<p class="no-results">No tasks match your criteria. Try broadening your search!</p>';
+                    return;
+                }
+                filteredTasks.forEach(task => {
+                    taskListContainer.appendChild(renderTaskCard(task));
+                });
+            }
+
+            function showTaskDetail(taskId) {
+                const task = aiTasks.find(t => t.id === taskId);
+                if (!task || !taskDetailModal || !taskDetailContent) return;
+
+                let alternativesHTML = '<h4>Recommended Alternatives:</h4>';
+                if (task.recommendedToolIds && task.recommendedToolIds.length > 0) {
+                    task.recommendedToolIds.forEach(toolId => {
+                        const tool = aiTools[toolId];
+                        if (tool) {
+                            alternativesHTML += `
+                                <div class="alternative-tool">
+                                    <h4>${tool.name}</h4>
+                                    <p><strong>Developer:</strong> ${tool.developer}</p>
+                                    <p><strong>Strengths:</strong> ${tool.strengths}</p>
+                                    <p><strong>Affordability:</strong> <span class="affordability-meter ${tool.affordability.toLowerCase()}">${tool.affordability}</span></p>
+                                    <p><strong>Why good for Apple Users:</strong> ${tool.whyGoodForAppleUsers}</p>
+                                    <p class="access-links">
+                                        <strong>Access:</strong>
+                                        ${tool.appleAccess.ios && tool.appleAccess.ios !== "N/A" ? `<a href="${tool.appleAccess.ios}" target="_blank" title="iOS App Store"><i class="fab fa-apple"></i> iOS</a>` : ''}
+                                        ${tool.appleAccess.macos && tool.appleAccess.macos !== "Web" && tool.appleAccess.macos !== "N/A" ? `<a href="${tool.appleAccess.macos}" target="_blank" title="macOS App"><i class="fas fa-desktop"></i> macOS App</a>` : ''}
+                                        ${tool.appleAccess.web && tool.appleAccess.web !== "N/A" ? `<a href="${tool.appleAccess.web}" target="_blank" title="Web Access"><i class="fas fa-globe"></i> Web</a>` : ''}
+                                    </p>
+                                </div>
+                            `;
+                        }
+                    });
+                } else {
+                    alternativesHTML = '<p>No specific third-party alternatives listed for this task yet.</p>';
+                }
+
+                taskDetailContent.innerHTML = `
+                    <h3><i class="${task.icon} task-icon"></i> ${task.name}</h3>
+                    <p>${task.description}</p>
+                    <hr>
+                    <h4>Apple Ecosystem Status:</h4>
+                    <div class="apple-native-status ${task.appleNativeStatus.level}" style="margin-bottom: 1rem; display: block;">
+                        <i class="${task.appleNativeStatus.icon}"></i> ${task.appleNativeStatus.text}
+                    </div>
+                    <hr>
+                    ${alternativesHTML}
+                `;
+                taskDetailModal.style.display = 'block';
+            }
+
+            if(closeModalButton) {
+                closeModalButton.addEventListener('click', () => {
+                    taskDetailModal.style.display = 'none';
+                });
+            }
+            
+
+            window.addEventListener('click', (event) => { 
+                if (event.target == taskDetailModal) {
+                    taskDetailModal.style.display = 'none';
+                }
+            });
+
+            populateCategories();
+            const initialSection = window.location.hash ? window.location.hash.substring(1) : 'home';
+            showSection(initialSection);
+            if (initialSection === 'task-explorer' || (document.getElementById('task-explorer') && document.getElementById('task-explorer').classList.contains('active-section'))) {
+                 populateTasks(); 
+            }
+
+
+            if(taskSearchInput) taskSearchInput.addEventListener('input', populateTasks);
+            if(categoryFilter) categoryFilter.addEventListener('change', populateTasks);
+        });
+    </script>
+</body>
+</html>
